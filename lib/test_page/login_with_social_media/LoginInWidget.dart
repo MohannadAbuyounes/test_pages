@@ -1,5 +1,5 @@
-import 'dart:developer';
 
+import 'dart:developer';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,6 @@ import '../listen_now.dart';
 import '../upload_image.dart';
 import '../video_now.dart';
 import '../voice_recorder.dart';
-import 'login_with_social_media.dart';
 
 class LoginInWidget extends StatelessWidget {
   const LoginInWidget({Key? key}) : super(key: key);
@@ -114,7 +113,7 @@ class LoginInWidget extends StatelessWidget {
                               return const Text(
                                   'Permission denied to access the microphone.');
                             } else {
-                              return ListenNow(frequency: '98.5 FM');
+                              return const ListenNow(frequency: '98.5 FM');
                             }
                           },
                         ),

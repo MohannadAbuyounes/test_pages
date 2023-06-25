@@ -1,8 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fluttertoast/fluttertoast.dart' show FToast, ToastGravity;
-
 import '../main.dart';
 
 class HelperFunctions {
@@ -28,11 +25,12 @@ class HelperFunctions {
         child: Container(
           height: 90,
           alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 10,
             vertical: 10,
           ),
           decoration: BoxDecoration(
+            // ignore: use_build_context_synchronously
             color: backgroundColor ?? Theme.of(ctx).colorScheme.error,
             borderRadius: BorderRadius.circular(10),
           ),
@@ -43,12 +41,12 @@ class HelperFunctions {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 icon ??
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       color: Colors.white,
                       size: 30,
                     ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     message,
@@ -99,7 +97,7 @@ class HelperFunctions {
                   color: Theme.of(context).colorScheme.primary,
                   size: 30,
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 Text(
                   title,
                   overflow: TextOverflow.ellipsis,
@@ -131,11 +129,11 @@ class HelperFunctions {
                 },
                 child: Container(
                   height: 40,
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxWidth: 100,
                     minWidth: 80,
                   ),
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 10,
                   ),
@@ -158,12 +156,12 @@ class HelperFunctions {
                   padding: EdgeInsets.zero,
                 ),
                 child: Container(
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxWidth: 100,
                     minWidth: 80,
                   ),
                   height: 40,
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 10,
                   ),

@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:voice_note/test_page/login_with_social_media/LoginInWidget.dart';
 import 'package:voice_note/test_page/login_with_social_media/login_with_social_media.dart';
 
@@ -18,7 +16,7 @@ class Welcome extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            return LoginInWidget();
+            return const LoginInWidget();
           } else if (snapshot.hasError) {
             return const Center(
               child: Text('Something Went Wrong!'),

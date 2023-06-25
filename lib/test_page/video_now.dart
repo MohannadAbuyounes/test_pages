@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 
-import 'package:path/path.dart';
+import 'package:path/path.dart' ;
 import 'package:path_provider/path_provider.dart';
 
 import '../helper.dart';
@@ -16,6 +16,7 @@ class VideoNow extends StatefulWidget {
   const VideoNow({Key? key, required this.cameras}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _VideoNowState createState() => _VideoNowState();
 }
 

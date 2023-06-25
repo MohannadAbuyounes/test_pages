@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:voice_note/helper.dart';
 
 class ListenNow extends StatelessWidget {
   final String frequency;
 
-  ListenNow({required this.frequency});
+  const ListenNow({required this.frequency});
 
   Future<void> openRadioAppWithFrequency(String frequency) async {
     final radioAppUrl = 'radioapp://tune?frequency=$frequency';
@@ -35,7 +34,7 @@ class ListenNow extends StatelessWidget {
           },
           child: Text(
             'Open Radio App with $frequency',
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),

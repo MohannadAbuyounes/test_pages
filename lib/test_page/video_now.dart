@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 
-import 'package:path/path.dart' ;
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../helper.dart';
@@ -24,6 +24,7 @@ class _VideoNowState extends State<VideoNow> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   late String _videoPath;
+  late int _currentCameraIndex = 0;
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _VideoNowState extends State<VideoNow> {
   }
 
   void _initializeCamera() async {
-    final firstCamera = widget.cameras.first;
+    final firstCamera = widget.cameras[(_currentCameraIndex)];
 
     _controller = CameraController(
       firstCamera,
@@ -96,6 +97,19 @@ class _VideoNowState extends State<VideoNow> {
     }
   }
 
+  Future<void> _switchRecording() async {
+    if (_controller.value.isRecordingVideo) {
+      return; // Prevent camera switch during recording
+    }
+
+    setState(() {
+      _currentCameraIndex = (_currentCameraIndex + 1) % widget.cameras.length;
+    });
+
+    await _controller.dispose();
+    _initializeCamera();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_controller.value.isInitialized) {
@@ -133,6 +147,12 @@ class _VideoNowState extends State<VideoNow> {
                   backgroundColor: Colors.blueGrey,
                   onPressed: _stopRecording,
                   child: const Icon(Icons.stop),
+                ),
+                const SizedBox(width: 20),
+                FloatingActionButton(
+                  backgroundColor: Colors.blueGrey,
+                  onPressed: _switchRecording,
+                  child: const Icon(Icons.cameraswitch_outlined),
                 ),
               ],
             ),

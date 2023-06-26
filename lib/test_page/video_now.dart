@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -16,7 +17,6 @@ class VideoNow extends StatefulWidget {
   const VideoNow({Key? key, required this.cameras}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _VideoNowState createState() => _VideoNowState();
 }
 
@@ -25,6 +25,10 @@ class _VideoNowState extends State<VideoNow> {
   late Future<void> _initializeControllerFuture;
   late String _videoPath;
   late int _currentCameraIndex = 0;
+  double _progressValue = 0.0;
+  double _recordedTime = 0;
+  bool _isRecording = false;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -33,7 +37,7 @@ class _VideoNowState extends State<VideoNow> {
   }
 
   void _initializeCamera() async {
-    final firstCamera = widget.cameras[(_currentCameraIndex)];
+    final firstCamera = widget.cameras[_currentCameraIndex];
 
     _controller = CameraController(
       firstCamera,
@@ -53,7 +57,7 @@ class _VideoNowState extends State<VideoNow> {
   }
 
   void _startRecording() async {
-    if (!_controller.value.isInitialized) {
+    if (!_controller.value.isInitialized || _isRecording) {
       return;
     }
 
@@ -62,29 +66,40 @@ class _VideoNowState extends State<VideoNow> {
 
       final Directory appDir = await getTemporaryDirectory();
       final String currentTime =
-          DateTime.now().millisecondsSinceEpoch.toString();
+          DateTime.now().microsecondsSinceEpoch.toString();
       final String fileName = 'video_$currentTime.mp4';
       final String videoPath = join(appDir.path, fileName);
 
       setState(() {
         _videoPath = videoPath;
+        _progressValue = 0.0;
+        _recordedTime = 0;
+        _isRecording = true;
       });
 
       await _controller.startVideoRecording();
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _recordedTime++;
+          _progressValue = _recordedTime /
+              10; // Adjust the value as per your desired duration
+        });
+      });
       HelperFunctions.showToastMessage(
           message: 'Start Video\nVideo saved: $currentTime',
           backgroundColor: Colors.blueGrey);
     } catch (e) {
-      log('kkkkkk$e');
+      log('Error starting video recording: $e');
     }
   }
 
   Future<void> _stopRecording() async {
-    if (!_controller.value.isRecordingVideo) {
+    if (!_controller.value.isRecordingVideo || !_isRecording) {
       return;
     }
 
     try {
+      _timer.cancel();
       await _controller.stopVideoRecording();
       final bool? isSaved = await GallerySaver.saveVideo(_videoPath);
       if (isSaved!) {
@@ -92,13 +107,16 @@ class _VideoNowState extends State<VideoNow> {
       } else {
         log('Error saving video to the gallery');
       }
+      setState(() {
+        _isRecording = false;
+      });
     } catch (e) {
       log('Error stopping video recording: $e');
     }
   }
 
   Future<void> _switchRecording() async {
-    if (_controller.value.isRecordingVideo) {
+    if (_controller.value.isRecordingVideo || _isRecording) {
       return; // Prevent camera switch during recording
     }
 
@@ -108,6 +126,12 @@ class _VideoNowState extends State<VideoNow> {
 
     await _controller.dispose();
     _initializeCamera();
+  }
+
+  String _formatTime(double time) {
+    final int minutes = (time / 60).floor();
+    final int seconds = (time % 60).floor();
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -127,32 +151,54 @@ class _VideoNowState extends State<VideoNow> {
         title: const Text('Video Recorder'),
       ),
       body: Stack(
-        alignment: Alignment.bottomCenter,
         children: [
-          CameraPreview(_controller),
+          CameraPreview(
+            _controller,
+          ),
           Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            height: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/office.png'), // Replace with your image path
+                fit: BoxFit.cover,
+              ),
+            ),
+            child:
+                Container(), // Add an empty container to allow touch events on the camera preview
+          ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                FloatingActionButton(
-                  backgroundColor: Colors.blueGrey,
-                  onPressed: _startRecording,
-                  child: const Icon(
-                    Icons.video_call,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                FloatingActionButton(
-                  backgroundColor: Colors.blueGrey,
-                  onPressed: _stopRecording,
-                  child: const Icon(Icons.stop),
-                ),
-                const SizedBox(width: 20),
-                FloatingActionButton(
-                  backgroundColor: Colors.blueGrey,
-                  onPressed: _switchRecording,
-                  child: const Icon(Icons.cameraswitch_outlined),
+                Text(_formatTime(_recordedTime)),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FloatingActionButton(
+                      backgroundColor: Colors.blueGrey,
+                      onPressed: _startRecording,
+                      child: const Icon(
+                        Icons.video_call,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    FloatingActionButton(
+                      backgroundColor: Colors.blueGrey,
+                      onPressed: _stopRecording,
+                      child: const Icon(Icons.stop),
+                    ),
+                    const SizedBox(width: 20),
+                    FloatingActionButton(
+                      backgroundColor: Colors.blueGrey,
+                      onPressed: _switchRecording,
+                      child: const Icon(Icons.cameraswitch_outlined),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -162,3 +208,4 @@ class _VideoNowState extends State<VideoNow> {
     );
   }
 }
+  

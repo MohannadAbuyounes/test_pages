@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:voice_note/helper.dart';
@@ -8,13 +10,18 @@ class ListenNow extends StatelessWidget {
   const ListenNow({required this.frequency});
 
   Future<void> openRadioAppWithFrequency(String frequency) async {
-    final radioAppUrl = 'radioapp://tune?frequency=$frequency';
-    if (await canLaunch(radioAppUrl)) {
-      await launch(radioAppUrl);
-    } else {
-      HelperFunctions.showToastMessage(
-          message: throw 'Could not launch the radio application');
+    try {
+      final radioAppUrl =
+          '/data/user/0/com.example.WOW_FM://tune?frequency=$frequency';
 
+      Uri uri = Uri.parse(radioAppUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        'Could not launch the radio application';
+      }
+    } catch (e) {
+      log('aaaaa:$e');
     }
   }
 
@@ -30,7 +37,7 @@ class ListenNow extends StatelessWidget {
         child: MaterialButton(
           color: Colors.blueGrey,
           onPressed: () {
-            openRadioAppWithFrequency('98.5%20FM');
+            openRadioAppWithFrequency('98.5');
           },
           child: Text(
             'Open Radio App with $frequency',
